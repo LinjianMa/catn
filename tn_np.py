@@ -281,6 +281,7 @@ class Tensor_Network_np:
         if(self.verbose >= 1):
             print("done")
         return error
+
     def select_edge_sequentially(self):
         edge = np.array(list(self.G.edges()))
         sum_edge=edge[:,0]+edge[:,1]
@@ -291,6 +292,7 @@ class Tensor_Network_np:
         #print(index)
         i, j = edge[index]
         return i, j
+
     def contraction(self):
         error = 0
         self.psi = 1
@@ -298,7 +300,6 @@ class Tensor_Network_np:
         t_select=0
         t_contract=0
         t_svd=0
-        #self.find_low_rank_all_edges()
         while self.G.number_of_edges() > 0:
             t0 =time.time()
             if(self.select == 0):
@@ -312,11 +313,11 @@ class Tensor_Network_np:
                 sys.exit(10)
             if(self.tensors[j].order() > self.tensors[i].order()):
                 i,j = j,i # this is to ensure that node i has larger degree than node j
-            print(i,j)
             orderi = self.tensors[i].order()
             orderj = self.tensors[j].order()
             logdimi = self.tensors[i].logdim()
             logdimj = self.tensors[j].logdim()
+
             self.count_remove_nodes([i, j] + list(self.tensors[i].neighbor) + list(self.tensors[j].neighbor))  # take care of the count dictionary first because it depends on shape of tensors
 
             t_select += time.time() - t0
@@ -327,14 +328,12 @@ class Tensor_Network_np:
             if(self.reverse):
                 if(idx_j_in_i < len(self.tensors[i].neighbor)//2):
                     #                    print("idx_j ",idx_j_in_i)
-                    print("inverse")
                     self.tensors[i].reverse()
                     neigh1 = self.tensors[i].neighbor
                     idx_j_in_i=np.argwhere(neigh1==j)[0][0]
 #                    print("idx_j ",idx_j_in_i)
                 if(idx_i_in_j >= len(self.tensors[j].neighbor)//2):
                     #                    print("idx_i ",idx_i_in_j)
-                    print("inverse")
                     self.tensors[j].reverse()
                     neigh2 = self.tensors[j].neighbor
                     idx_i_in_j=np.argwhere(neigh2==i)[0][0]
@@ -406,25 +405,6 @@ class Tensor_Network_np:
                 self.tensors[i].compress()
              if(self.verbose >= 1):
                print("done")
-            
-            """
-            #The code below tries to find low-rank structures after compression. However in practice it can not find any low-rank structures.
-            if(self.verbose >= 1):
-                #sys.stdout.write("check low-rank again...");sys.stdout.flush()
-                print("check low-rank again...")
-            for idxj in range(len(self.tensors[i].neighbor)):
-                j = self.tensors[i].neighbor[idxj]
-                if(len(self.tensors[j].mps) <=1 ):
-                    continue
-                if self.svdopt:
-                    error = error + self.cut_bondim_opt(i,idxj)
-                else:
-                    error = error + self.cut_bondim(i,idxj)
-
-            if(self.verbose >= 1):
-                print("done")
-            """
-
 
             edges=np.array(list(self.G.edges))
             m_left=0

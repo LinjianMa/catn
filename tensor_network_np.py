@@ -187,6 +187,8 @@ class Tensor_Network_np:
                 i,j = self.select_edge_min_dim()
             elif(self.select == 1):
                 i,j = self.select_edge_min_dim_triangle()
+            elif(self.select ==2):
+                i,j =self.select_edge_sequentially()
             else:
                 print("wrong choice for args.select")
                 sys.exit(10)
@@ -197,13 +199,13 @@ class Tensor_Network_np:
             logdimi = self.tensors[i].logdim()
             logdimj = self.tensors[j].logdim()
 
-            self.count_remove_nodes([i,j]+list(self.tensors[i].neighbor)+list(self.tensors[j].neighbor)) # take care of the count dictionary first because it depends on shape of tensors
+            self.count_remove_nodes([i, j] + list(self.tensors[i].neighbor) + list(self.tensors[j].neighbor)) # take care of the count dictionary first because it depends on shape of tensors
 
-            t_select += time.time()-t0
+            t_select += time.time() - t0
             neigh1 = self.tensors[i].neighbor
             neigh2 = self.tensors[j].neighbor
-            idx_j_in_i=np.argwhere(neigh1==j)[0][0]
-            idx_i_in_j=np.argwhere(neigh2==i)[0][0]
+            idx_j_in_i = np.argwhere(neigh1 == j)[0][0]
+            idx_i_in_j = np.argwhere(neigh2 == i)[0][0]
             if(self.reverse):
                 if(idx_j_in_i < len(self.tensors[i].neighbor)//2):
                     #                    print("idx_j ",idx_j_in_i)
